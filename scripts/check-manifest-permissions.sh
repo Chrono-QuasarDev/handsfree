@@ -9,6 +9,10 @@ fi
 if [ -n "$MERGED_MANIFEST" ] && [ -f "$MERGED_MANIFEST" ]; then
     MANIFEST="$MERGED_MANIFEST"
 else
+    if [ -n "${CI:-}" ] && { [ -z "$MERGED_MANIFEST" ] || [ ! -f "$MERGED_MANIFEST" ]; }; then
+        echo "ERROR: merged manifest not found in CI — refusing to fall back to the source manifest"
+        exit 1
+    fi
     MANIFEST="app/src/main/AndroidManifest.xml"
 fi
 

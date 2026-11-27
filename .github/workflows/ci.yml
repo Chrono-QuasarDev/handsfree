@@ -33,7 +33,7 @@ jobs:
         with:
           name: merged-manifest
           path: app/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml
-          if-no-files-found: ignore
+          if-no-files-found: error
 
   permissions-audit:
     needs: android-build
@@ -44,7 +44,6 @@ jobs:
         with:
           name: merged-manifest
           path: app/build/intermediates/merged_manifests/debug/processDebugManifest
-        continue-on-error: true
       - run: bash scripts/check-manifest-permissions.sh
 
   engine-purity:
