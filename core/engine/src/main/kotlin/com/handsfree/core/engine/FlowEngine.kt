@@ -22,6 +22,19 @@ class FlowEngine(private val flow: FlowDefinition) {
         }
 
         val step = flow.steps[cursor]
+        val expectedOption = step.expectOption
+        if (expectedOption != null) {
+            val matched = screen.options.firstOrNull {
+                it.label.contains(expectedOption, ignoreCase = true)
+            }
+            return if (matched != null) {
+                cursor++
+                EngineResult.Action.TapOption(matched.label)
+            } else {
+                EngineResult.Halted(HaltReason.NoRule).also { terminal = it }
+            }
+        }
+
         return if (screen.messageText.contains(step.expectText, ignoreCase = true)) {
             cursor++
             EngineResult.Action.TapOption(step.tapLabel)

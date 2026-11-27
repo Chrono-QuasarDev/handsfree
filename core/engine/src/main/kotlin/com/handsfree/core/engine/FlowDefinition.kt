@@ -1,6 +1,10 @@
 package com.handsfree.core.engine
 
-/** v0 shape. Extended by E5 (option matching) and E7 (params). Do not add fields now. */
-data class Step(val expectText: String, val tapLabel: String)
+/** Extended in E5 with optional [expectOption] for on-screen option matching. */
+data class Step(
+    val expectText: String = "",
+    val tapLabel: String = "",
+    val expectOption: String? = null,
+)
 
 data class FlowDefinition(val steps: List<Step>)
