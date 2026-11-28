@@ -52,6 +52,22 @@ class FlowEngine(
             }
         }
 
+        val typeValue = step.typeValue
+        if (typeValue != null) {
+            val field = screen.inputField
+            if (field == null || typeValue.isBlank()) {
+                return EngineResult.Halted(HaltReason.NoRule).also { terminal = it }
+            }
+            // Belt-and-braces: typing path must also refuse password fields even if gate above were bypassed.
+            if (isPinGateTriggered(screen)) {
+                return EngineResult.Halted(HaltReason.PinGate).also { terminal = it }
+            }
+            cursor++
+            actionCount++
+            lastActivityMs = now
+            return EngineResult.Action.TypeText(typeValue)
+        }
+
         return if (screen.messageText.contains(step.expectText, ignoreCase = true)) {
             cursor++
             actionCount++
