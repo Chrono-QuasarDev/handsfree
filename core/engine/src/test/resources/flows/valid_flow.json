@@ -1,0 +1,17 @@
+{
+  "id": "sample_two_step",
+  "network": "TEST_NET",
+  "name": "Sample Two-Step Flow",
+  "entry": "*999#",
+  "timeoutMs": 10000,
+  "maxActions": 6,
+  "verified": {
+    "by": "qa-tester",
+    "date": "2026-11-28",
+    "device": "Pixel 7"
+  },
+  "steps": [
+    { "expectOption": "Option A" },
+    { "typeValue": "50" }
+  ]
+}
