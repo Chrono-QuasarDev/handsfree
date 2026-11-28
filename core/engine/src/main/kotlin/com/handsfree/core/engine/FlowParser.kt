@@ -105,8 +105,6 @@ class FlowParser {
             }
             if (step.typeValue == null && step.expectOption == null && step.tapLabel.isNullOrBlank()) {
                 errors += ValidationError("$prefix.tapLabel", "tapLabel must not be blank when typeValue is not set")
-            } else if (step.typeValue == null && step.tapLabel != null && step.tapLabel.isBlank()) {
-                errors += ValidationError("$prefix.tapLabel", "tapLabel must not be blank when typeValue is not set")
             }
             if (step.expectText.isNullOrBlank() && step.expectOption.isNullOrBlank() && step.typeValue.isNullOrBlank()) {
                 errors += ValidationError(prefix, "step must set expectText, expectOption, or typeValue")
@@ -118,6 +116,8 @@ class FlowParser {
 
     private fun extractPath(message: String?): String {
         if (message == null) return "$"
+        val missingMatch = MISSING_FIELD_REGEX.find(message)
+        if (missingMatch != null) return missingMatch.groupValues[1]
         val marker = "at path: "
         val idx = message.indexOf(marker)
         if (idx == -1) return "$"
@@ -160,5 +160,6 @@ class FlowParser {
         const val MAX_ACTIONS = 12
         const val MAX_STEPS = 12
         val DIAL_CODE_REGEX = Regex("^[*#][0-9*#]{1,23}#$")
+        val MISSING_FIELD_REGEX = Regex("Field '([^']+)' is required")
     }
 }

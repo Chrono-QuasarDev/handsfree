@@ -16,7 +16,7 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :core:model:test :core:engine:test
+      - run: ./gradlew :core:model:test :core:engine:test :core:engine:jacocoTestCoverageVerification
 
   android-build:
     needs: jvm-tests
