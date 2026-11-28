@@ -41,9 +41,7 @@ class FlowEngine(
         val step = flow.steps[cursor]
         val expectedOption = step.expectOption
         if (expectedOption != null) {
-            val matched = screen.options.firstOrNull {
-                it.label.contains(expectedOption, ignoreCase = true)
-            }
+            val matched = matchOptionTiered(screen.options, expectedOption)
             return if (matched != null) {
                 cursor++
                 actionCount++
@@ -62,6 +60,57 @@ class FlowEngine(
         } else {
             EngineResult.Halted(HaltReason.NoRule).also { terminal = it }
         }
+    }
+
+    private fun matchOptionTiered(
+        options: List<com.handsfree.core.model.Option>,
+        rawExpectation: String,
+    ): com.handsfree.core.model.Option? {
+        val expected = rawExpectation.trim()
+        if (expected.isEmpty()) return null
+
+        val strippedExpected = stripNumericPrefix(expected)
+        val predicates: List<(com.handsfree.core.model.Option) -> Boolean> = listOf(
+            // Tier 0: raw equality (case-insensitive, trimmed)
+            { it.label.trim().equals(expected, ignoreCase = true) },
+            // Tier 1: prefix-adjusted equality
+            { stripNumericPrefix(it.label).equals(strippedExpected, ignoreCase = true) },
+            // Tier 2: substring match
+            { it.label.contains(expected, ignoreCase = true) },
+        )
+
+        for (predicate in predicates) {
+            val matches = options.filter(predicate)
+            if (matches.isNotEmpty()) {
+                return if (matches.size == 1) matches[0] else null
+            }
+        }
+        return null
+    }
+
+    private fun stripNumericPrefix(text: String): String {
+        val s = text.trim()
+        var i = 0
+        while (i < s.length && s[i].isDigit() && i < 3) {
+            i++
+        }
+        if (i == 0 || (i < s.length && s[i].isDigit())) return s
+
+        while (i < s.length && s[i].isWhitespace()) {
+            i++
+        }
+        if (i >= s.length || (s[i] != '.' && s[i] != ')' && s[i] != ':' && s[i] != '-')) {
+            return s
+        }
+        i++
+
+        while (i < s.length && s[i].isWhitespace()) {
+            i++
+        }
+        if (i >= s.length || s[i].isDigit()) {
+            return s
+        }
+        return s.substring(i).trim()
     }
 
     private fun isPinGateTriggered(screen: UssdScreen): Boolean {
