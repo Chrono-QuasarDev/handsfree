@@ -68,7 +68,7 @@ class FlowEngine(
             return EngineResult.Action.TypeText(typeValue)
         }
 
-        return if (screen.messageText.contains(step.expectText, ignoreCase = true)) {
+        return if (step.expectText.isNotBlank() && screen.messageText.contains(step.expectText, ignoreCase = true)) {
             cursor++
             actionCount++
             lastActivityMs = now

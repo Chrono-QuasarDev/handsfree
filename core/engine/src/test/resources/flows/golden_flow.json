@@ -1,0 +1,18 @@
+{
+  "id": "golden_three_step",
+  "network": "TEST_NET",
+  "name": "Golden Three-Step Flow",
+  "entry": "*999#",
+  "timeoutMs": 5000,
+  "maxActions": 4,
+  "verified": {
+    "by": "supervisor",
+    "date": "2026-11-28",
+    "device": "Pixel 7"
+  },
+  "steps": [
+    { "expectOption": "Option A" },
+    { "expectOption": "Option B" },
+    { "typeValue": "150" }
+  ]
+}
